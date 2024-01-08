@@ -6,10 +6,16 @@ const { User } = require("./user.js")
 const { Exercise } = require("./exercise.js")
 
 const mongoose = require('mongoose')
+const { MongoMemoryServer } = require("mongodb-memory-server")
 
 require('dotenv').config()
 
-mongoose.connect(process.env.MONGO_URL).then(() => console.log("Connected to mongo..."))
+async function initDB() {
+    const mongod = await MongoMemoryServer.create();
+    await mongoose.connect(mongod.getUri())
+}
+
+initDB()
 
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
@@ -52,7 +58,7 @@ app.post("/api/users/:id/exercises", async (req, res) => {
         date = Date.now()
     }
 
-    const user = await User.findByID(id)
+    const user = await User.findById(id)
 
     if (!user) {
         res.status(404).json({
