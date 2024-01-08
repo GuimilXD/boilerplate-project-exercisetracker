@@ -142,7 +142,7 @@ app.get("/api/users/:id/logs", async (req, res) => {
         username: user.username,
         _id: id,
         count: exercises.length,
-        exercises: exercises
+        log: exercises
     })
 })
 
