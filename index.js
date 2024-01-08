@@ -98,14 +98,8 @@ app.get("/api/users/:id/logs", async (req, res) => {
     const { id } = req.params
     const { limit, from, to } = req.query
 
-    let user
-    if (isNaN(limit)) {
-        user = await User.findById(id)
-    } else {
-        user = await User.findById(id, {
-            exercises: { $slice: parseInt(limit) }
-        })
-    }
+
+    const user = await User.findById(id)
 
     if (!user) {
         res.status(404).json({
@@ -114,7 +108,7 @@ app.get("/api/users/:id/logs", async (req, res) => {
         return
     }
 
-    const exercises = []
+    let exercises = []
 
     user.exercises.filter(ex => {
         if (from) {
@@ -137,6 +131,10 @@ app.get("/api/users/:id/logs", async (req, res) => {
             description: ex.description
         })
     })
+
+    if (limit) {
+        exercises = exercises.slice(0, limit)
+    }
 
     res.json({
         username: user.username,
